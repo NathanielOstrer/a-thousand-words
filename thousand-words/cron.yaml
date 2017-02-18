@@ -1,0 +1,4 @@
+cron:
+- description: scrape news
+  url: /scrape
+  schedule: every 30 minutes
