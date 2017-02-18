@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="top|start">
+    <ImageButton
+        android:scaleType="centerCrop"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:background="@null"
+        app:srcCompat="@color/black_overlay"
+        android:onClick="newsClick" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:gravity="center_horizontal"
+        android:alpha="0"
+        android:textColor="@color/news_overlay"
+        android:textSize="@dimen/news_text_size"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="70dp" />
+</RelativeLayout>
