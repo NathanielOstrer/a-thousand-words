@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0099cc"
+    android:background="#000000"
     tools:context="pictures.newsin.athousandwords.HomepageActivity">
 
     <!-- The primary full-screen view. This can be replaced with whatever view
@@ -12,98 +12,20 @@
 
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true"
-        android:id="@+id/base_layout"
-        android:gravity="top|left">
 
-    </RelativeLayout>
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:weightSum="1"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true">
-
-            <ImageButton
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:srcCompat="@color/colorPrimary"
-                android:id="@+id/news_picture_0x0"
-                android:layout_weight="0.5"
-                android:background="@null" />
-            <ImageButton
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                app:srcCompat="@color/colorPrimary"
-                android:id="@+id/news_picture_1x0"
-                android:layout_weight="0.5"
-                android:background="@null" />
-        </LinearLayout>
-        <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
+    <ScrollView
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:weightSum="1"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true">
-
-            <ImageButton
-                android:layout_width="0dip"
-                android:layout_height="match_parent"
-                app:srcCompat="@color/colorPrimary"
-                android:id="@+id/news_picture_0x1"
-                android:layout_weight="0.5"
-                android:background="@null" />
-            <ImageButton
-                android:layout_width="0dip"
-                android:layout_height="match_parent"
-                app:srcCompat="@color/colorPrimary"
-                android:id="@+id/news_picture_1x1"
-                android:layout_weight="0.5"
-                android:background="@null" />
-        </LinearLayout>
+        android:id="@+id/news_scroll_view">
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:weightSum="1"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true">
+            android:fitsSystemWindows="true"
+            android:id="@+id/images_layer"
+            android:gravity="top|left"
+            android:orientation="vertical">
 
-            <ImageButton
-                android:layout_width="0dip"
-                android:layout_height="match_parent"
-                app:srcCompat="@color/colorPrimary"
-                android:id="@+id/news_picture_0x2"
-                android:layout_weight="0.5"
-                android:background="@null" />
-            <ImageButton
-                android:layout_width="0dip"
-                android:layout_height="match_parent"
-                app:srcCompat="@color/colorPrimary"
-                android:id="@+id/news_picture_1x2"
-                android:layout_weight="0.5"
-                android:background="@null" />
         </LinearLayout>
-    </LinearLayout>
+    </ScrollView>
 
 </FrameLayout>
