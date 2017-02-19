@@ -1,9 +1,12 @@
 package pictures.newsin.athousandwords;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,8 +22,10 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -34,6 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -41,8 +47,28 @@ import java.util.List;
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class HomepageActivity extends AppCompatActivity {
+public class HomepageActivity extends AppCompatActivity implements View.OnLongClickListener {
+
+    public static List<String> newsList;
+    public static HashMap<String, String> newsKeys = new HashMap<>();
+    static{
+        newsKeys.put("The New York Times", "the-new-york-times");
+        newsKeys.put("CNN", "cnn");
+        newsKeys.put("The Washington Post", "the-washington-post");
+        newsKeys.put("The Wall Street Journal", "the-wall-street-journal");
+        newsKeys.put("Associated Press", "associated-press");
+        newsKeys.put("BBC", "bbc-news");
+        newsKeys.put("Independent", "independent");
+        newsKeys.put("Engadget", "engadget");
+        newsKeys.put("Reddit.com/r/all", "reddit-r-all");
+        newsKeys.put("Business Insider", "business-insider");
+        newsKeys.put("National Geographic", "national-geographic");
+        newsKeys.put("The Economist", "the-economist");
+        newsKeys.put("IGN", "ign");
+    }
+
     private static final int UI_ANIMATION_DELAY = 0;
+    private static final int FADE_TIME = 350;
     private final Handler mHideHandler = new Handler();
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
@@ -73,6 +99,7 @@ public class HomepageActivity extends AppCompatActivity {
     };
 
     public ImageButton activePressed = null;
+    public int imageState = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,9 +110,12 @@ public class HomepageActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_homepage);
 
+        newsList = new ArrayList<String>();
+        newsList.addAll(newsKeys.keySet());
+
         //createProgressBarLayout();
         // PULL THE NEWSIN.PICTURES CONTENT
-        new LoadNewsTask(this).execute();
+        //new LoadNewsTask(this).execute();
     }
 
     @Override
@@ -96,6 +126,13 @@ public class HomepageActivity extends AppCompatActivity {
         // created, to briefly hint to the user that UI controls
         // are available.
         hide();
+    }
+
+    @Override
+    public void onResume() {
+
+        super.onResume();
+        new LoadNewsTask(this).execute();
     }
 
     private void hide() {
@@ -128,22 +165,65 @@ public class HomepageActivity extends AppCompatActivity {
     }
 
 
+    private void removeActive() {
+        activePressed.animate().alpha(1f).setDuration(FADE_TIME).setInterpolator(new DecelerateInterpolator());
+        NewsStructure structure = (NewsStructure)activePressed.getTag();
+        View v = structure.titleView;
+        v.animate().alpha(0f).setDuration(FADE_TIME).setInterpolator(new DecelerateInterpolator());
+        v = structure.descriptionView;
+        v.animate().alpha(0f).setDuration(FADE_TIME).setInterpolator(new DecelerateInterpolator());
+        v = structure.iconView;
+        v.animate().alpha(0f).setDuration(FADE_TIME).setInterpolator(new DecelerateInterpolator());
+    }
+
     public void newsClick(View v) {
 
-        if(activePressed != null) {
-            activePressed.animate().alpha(1f).setDuration(350).setInterpolator(new DecelerateInterpolator());
-            TextView tv = ((NewsStructure) activePressed.getTag()).textView;
-            tv.animate().alpha(0f).setDuration(350).setInterpolator(new DecelerateInterpolator());
-        }
+        NewsStructure news = (NewsStructure) v.getTag();
+
         if(activePressed != v) {
-            NewsStructure news = (NewsStructure) v.getTag();
+
+            if(activePressed != null) {
+                removeActive();
+            }
             activePressed = (ImageButton) v;
-            activePressed.animate().alpha(0.5f).setDuration(350).setInterpolator(new AccelerateInterpolator());
-            TextView tv = ((NewsStructure) activePressed.getTag()).textView;
-            tv.animate().alpha(1f).setDuration(350).setInterpolator(new DecelerateInterpolator());
+            activePressed.animate().alpha(0.5f).setDuration(FADE_TIME).setInterpolator(new AccelerateInterpolator());
+            news.titleView.animate().alpha(1f).setDuration(FADE_TIME).setInterpolator(new DecelerateInterpolator());
+            news.iconView.animate().alpha(1f).setDuration(FADE_TIME).setInterpolator(new DecelerateInterpolator());
+            imageState = 1;
         }else {
+            switch(imageState) {
+                case 1:
+                    imageState = 2;
+                    TextView tv = news.titleView;
+                    tv.animate().alpha(0f).setDuration(FADE_TIME).setInterpolator(new DecelerateInterpolator());
+                    tv = news.descriptionView;
+                    tv.animate().alpha(1f).setDuration(FADE_TIME).setInterpolator(new DecelerateInterpolator());
+                    break;
+
+                case 2:
+                    removeActive();
+                    imageState = 0;
+                    activePressed = null;
+//                    Intent viewIntent =
+//                            new Intent(Intent.ACTION_VIEW,
+//                                    Uri.parse(news.url));
+//                    startActivity(viewIntent);
+                    WebpageActivity.loadWebpage(this, news.url);
+                    break;
+
+            }
+        }
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        if (activePressed != null) {
+            removeActive();
             activePressed = null;
         }
+        Intent intent = new Intent(this, NewSourcesActivity.class);
+        startActivity(intent);
+        return true;
     }
 
     public class NewsStructure {
@@ -151,7 +231,11 @@ public class HomepageActivity extends AppCompatActivity {
         public String title;
         public String description;
         public String image;
-        public TextView textView;
+        public String icon;
+
+        public TextView titleView;
+        public TextView descriptionView;
+        public ImageView iconView;
 
         public NewsStructure(JSONObject newsJSON) {
             try {
@@ -159,6 +243,7 @@ public class HomepageActivity extends AppCompatActivity {
                 this.title = newsJSON.getString("title");
                 this.description = newsJSON.getString("description");
                 this.image = newsJSON.getString("image");
+                this.icon = newsJSON.getString("icon");
             }catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -168,9 +253,11 @@ public class HomepageActivity extends AppCompatActivity {
     public class NewsLoad {
         public NewsStructure structure;
         public Bitmap image;
-        public NewsLoad(NewsStructure structure, Bitmap image) {
+        public Bitmap icon;
+        public NewsLoad(NewsStructure structure, Bitmap image, Bitmap icon) {
             this.structure = structure;
             this.image = image;
+            this.icon = icon;
         }
     }
 
@@ -188,25 +275,28 @@ public class HomepageActivity extends AppCompatActivity {
             JSONParser parser = new JSONParser();
             JSONObject result = parser.getJSONFromUrl("https://thousand-words.appspot.com/getnews.json");
             List<NewsLoad> articles = new ArrayList<NewsLoad>();
-            try {
-                Iterator<String> keys = result.keys();
-                while (keys.hasNext()) {
-                    String key = keys.next();
+            for (String source : newsList) {
+                try {
+                    String key = newsKeys.get(source);
                     JSONObject article = result.getJSONObject(key);
                     NewsStructure structure = new NewsStructure(article);
                     Bitmap image = getBitmapFromURL(structure.image);
+                    Bitmap icon = getBitmapFromURL(structure.icon);
 
-                    articles.add(new NewsLoad(structure, image));
+                    articles.add(new NewsLoad(structure, image, icon));
+                }catch(JSONException e) {
+                    e.printStackTrace();
                 }
-            }catch(JSONException e) {
-                e.printStackTrace();
             }
             return articles;
         }
 
 
         protected void onPostExecute(List<NewsLoad> articles) {
+            DisplayMetrics metrics = new DisplayMetrics();
+            activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
             LinearLayout imageView = (LinearLayout) activity.findViewById(R.id.images_layer);
+            imageView.removeAllViews();
             for (int i = 0; i < articles.size(); i++) {
                 RelativeLayout newsLayout = (RelativeLayout) LayoutInflater.from(activity).inflate(R.layout.newsbutton, null);
                 ImageButton newsButton = (ImageButton) newsLayout.getChildAt(0);
@@ -214,14 +304,26 @@ public class HomepageActivity extends AppCompatActivity {
 //                newsButton.setBackgroundDrawable(null);
 //                newsButton.setScaleType(ImageView.ScaleType.CENTER_CROP);
 //                newsButton.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 1000));
-                newsButton.setMinimumHeight(1000);
+                newsButton.setMinimumHeight((int)(300*metrics.density));
                 NewsLoad article = articles.get(i);
-                newsButton.setImageBitmap(article.image);
+                if(article.image != null)
+                    newsButton.setImageBitmap(article.image);
                 newsButton.setTag(article.structure);
+                newsButton.setOnLongClickListener(activity);
 
                 TextView text = (TextView) newsLayout.getChildAt(1);
                 text.setText(article.structure.title);
-                article.structure.textView = text;
+                article.structure.titleView = text;
+
+                text = (TextView) newsLayout.getChildAt(2);
+                text.setText(article.structure.description);
+                article.structure.descriptionView = text;
+
+                ImageView iconView = (ImageView) newsLayout.getChildAt(3);
+                if(article.icon != null)
+                    iconView.setImageBitmap(article.icon);
+                article.structure.iconView = iconView;
+
 
                 //imageView.addView(newsButton);
                 imageView.addView(newsLayout);
