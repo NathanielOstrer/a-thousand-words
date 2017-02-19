@@ -21,10 +21,11 @@ def getnews(source):
     url = article['url']
     author = article['author']
 
+
     return {"source" : source, "description" : article["description"].encode('ascii', 'ignore').replace("'", "`").replace('"', '`'),
             "title" : article["title"].encode('ascii', 'ignore').replace("'", "`").replace('"', '`'), "url" : article["url"],
             "author" : article["author"].encode('ascii', 'ignore').replace("'", "`").replace('"', '`'), "image" : article["urlToImage"],
-            "publishedAt" : article["publishedAt"].encode('ascii', 'ignore').replace("'", "`").replace('"', '`') }
+            "publishedAt" : article["publishedAt"].encode('ascii', 'ignore').replace("'", "`").replace('"', '`'), "icon" : 'https://thousand-words.appspot.com/{}.png'.format(source) }
 
 if __name__ == "__main__":
     #print nytimes()

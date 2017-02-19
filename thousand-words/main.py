@@ -17,74 +17,94 @@
 import webapp2
 from google.appengine.ext import vendor
 import scraper
+import random
 
+import word_img_map, img_to_tags_map
 
 vendor.add('lib')
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
-        def get(self):
-		self.response.out.write("""
-			<html>
-	<head>
-		<title>News in Pictures</title>
-		<link rel="stylesheet" href="./style.css">
-		<meta http-equiv="refresh" content="600; URL=/">
-        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
-        <meta http-equiv="Pragma" content="no-cache"/>
-        <meta http-equiv="Expires" content="0"/>
-        <!-- start Mixpanel --><script type="text/javascript">(function(e,b){if(!b.__SV){var a,f,i,g;window.mixpanel=b;b._i=[];b.init=function(a,e,d){function f(b,h){var a=h.split(".");2==a.length&&(b=b[a[0]],h=a[1]);b[h]=function(){b.push([h].concat(Array.prototype.slice.call(arguments,0)))}}var c=b;"undefined"!==typeof d?c=b[d]=[]:d="mixpanel";c.people=c.people||[];c.toString=function(b){var a="mixpanel";"mixpanel"!==d&&(a+="."+d);b||(a+=" (stub)");return a};c.people.toString=function(){return c.toString(1)+".people (stub)"};i="disable time_event track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.set_once people.increment people.append people.union people.track_charge people.clear_charges people.delete_user".split(" ");
-for(g=0;g<i.length;g++)f(c,i[g]);b._i.push([a,e,d])};b.__SV=1.2;a=e.createElement("script");a.type="text/javascript";a.async=!0;a.src="undefined"!==typeof MIXPANEL_CUSTOM_LIB_URL?MIXPANEL_CUSTOM_LIB_URL:"file:"===e.location.protocol&&"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\//)?"https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js":"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js";f=e.getElementsByTagName("script")[0];f.parentNode.insertBefore(a,f)}})(document,window.mixpanel||[]);
-mixpanel.init("e503d1b1277055fd50bfe762ae627763");</script><!-- end Mixpanel -->
-<script type="text/javascript">
-mixpanel.track("visit");
-</script>
-	</head>
-	<body>
-			""")
-		headlines = models.Headline.gql("WHERE time != DATE('2015-01-01') ORDER BY time DESC").fetch(limit=6)
+        self.response.write("""
+        	<html>
+  <head>
+    <title>NYT 2016 Word Cloud</title>
+    <script src="lib/d3/d3.js" charset="utf-8"></script>
+    <script src="lib/d3/d3.layout.cloud.js"></script>
+    <script src="d3.wordcloud.js"></script>
+    <script src="words.js"></script>
+  </head>
+  <body style="text-align: center; background-color: black; overflow: hidden;">
+    <div id='wordcloud'></div>
+    <script>
+      d3.wordcloud()
+        .size([window.innerWidth, window.innerHeight])
+        .fill(d3.scale.ordinal().range(["red", "white", "blue"]))
+        .words(words)
+        .font("Impact")
+        .spiral("archimedean")
+        .start();
+    </script>
+  </body>
+</html>
 
-		for headline in headlines:
-			self.response.out.write('<div class="img" style="background-image: url(\'' + str(headline.image) + '\');">')
-			self.response.out.write('<a href="' + str(headline.url) + '">')
-			self.response.out.write('<span class="text-content">')
-			self.response.out.write('<span>')
-			self.response.out.write('<span class="headline">')
-   		 	self.response.out.write(str(headline.headline))
-			self.response.out.write('</span>')
-			self.response.out.write('<span class="blurb">')
-			#self.response.out.write('Blurb goes here')
-   		 	self.response.out.write('</span>')
-   		 	self.response.out.write('<span class=logo>')
-   		 	self.response.out.write('<img src="/' + str(headline.source) +'.png" alt="">')
-   		 	self.response.out.write('</span>')
-   		 	self.response.out.write('</span>')
-			self.response.out.write('</span>')
-			self.response.out.write('</a>')
-			self.response.out.write('</div>')
-			self.response.out.write('\n')
 
-		self.response.out.write("""
-		</body>
-		</html>
-			""")
+
+
+        	""")
 
 class GetNews(webapp2.RequestHandler):
 	def get(self):
-		subscriptions = ['the-washington-post', 'the-new-york-times', 'associated-press', 'bbc-news', 'cnn', 'the-wall-street-journal']
+		subscriptions = ['the-washington-post', 'the-new-york-times', 'associated-press', 'bbc-news', 'cnn', 'the-wall-street-journal', 'espn', 'bloomberg', 'business-insider', 'engadget', 'independent', 'national-geographic', 'reddit-r-all', 'the-economist', 'ign']
 
 		articles = {}
 
 		for sub in subscriptions:
-			article = scraper.getnews(sub)
-			source = article['source']
-			del article['source']
-			articles[source] = article
+			try:
+				print 'sub = {}'.format(sub)
+	
+				article = scraper.getnews(sub)
+				source = article['source']
+				del article['source']
+				articles[source] = article
+			except:
+				print "jinkees there's no article!"
 
 		self.response.write(str(articles).replace("u'", "'").replace("'", '"'))
 
+class Headline(webapp2.RequestHandler):
+	def get(self):
+		phrase = self.request.url.split('/')[-1]
+		
+		images = word_img_map.word_img_map[phrase]
+
+		val = random.randint(0, len(images)-1)
+
+		image = images[val]
+
+		self.response.write("""
+
+			<html>
+
+				<body style="background-color: black">
+
+					<center>
+
+						<img src="/{}">
+
+						<p> Also: </p>
+
+					</center>
+
+				</body>
+
+			</html>
+
+
+			""".format(image))
 
 app = webapp2.WSGIApplication([
+	('/getnews.json', GetNews),
+	(r'/.+', Headline),
 	('/', MainHandler),
-	('/getnews', GetNews)
 ], debug=True)

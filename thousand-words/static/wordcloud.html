@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <title>NYT 2016 Word Cloud</title>
+    <script src="lib/d3/d3.js" charset="utf-8"></script>
+    <script src="lib/d3/d3.layout.cloud.js"></script>
+    <script src="d3.wordcloud.js"></script>
+    <script src="words.js"></script>
+  </head>
+  <body style="text-align: center; background-color: black; overflow: hidden;">
+    <div id='wordcloud'></div>
+    <script>
+      d3.wordcloud()
+        .size([window.innerWidth, window.innerHeight])
+        .fill(d3.scale.ordinal().range(["red", "white", "blue"]))
+        .words(words)
+        .font("Impact")
+        .spiral("archimedean")
+        .start();
+    </script>
+  </body>
+</html>
+
