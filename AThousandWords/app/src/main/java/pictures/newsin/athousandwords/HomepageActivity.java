@@ -31,6 +31,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -309,6 +310,10 @@ public class HomepageActivity extends AppCompatActivity implements View.OnLongCl
 
             JSONParser parser = new JSONParser();
             JSONObject result = parser.getJSONFromUrl("https://thousand-words.appspot.com/getnews.json");
+            if(result == null) {
+                Toast.makeText(activity, "Error: No Internet", Toast.LENGTH_SHORT).show();
+                return null;
+            }
             List<NewsLoad> articles = new ArrayList<>();
             List<String> cacheKeys = new ArrayList<>(imageCache.keySet());
             for (String source : newsList) {
@@ -345,6 +350,7 @@ public class HomepageActivity extends AppCompatActivity implements View.OnLongCl
 
 
         protected void onPostExecute(List<NewsLoad> articles) {
+            if(articles == null) return;
             DisplayMetrics metrics = new DisplayMetrics();
             activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
             LinearLayout imageView = (LinearLayout) activity.findViewById(R.id.images_layer);
