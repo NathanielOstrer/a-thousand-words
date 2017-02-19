@@ -17,9 +17,9 @@ handlers:
   static_files: static/about.html
   upload: static/about.html
 
-- url: /(.*\.(gif|png|jpg))$
+- url: /(.*\.(gif|png|jpg|js))$
   static_files: static/\1
-  upload: static/.*\.(gif|png|jpg)$
+  upload: static/.*\.(gif|png|jpg|js)$
 
 - url: .*
   script: main.app

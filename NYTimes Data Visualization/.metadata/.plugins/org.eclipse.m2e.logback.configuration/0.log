@@ -1,0 +1,6 @@
+2017-02-18 15:45:46,424 [Worker-1] INFO  c.g.t.t.d.PublishedGradleVersions - Gradle version information cache is out-of-date. Trying to update.
+2017-02-18 15:51:13,966 [Worker-1] INFO  c.g.t.t.d.PublishedGradleVersions - Gradle version information cache is up-to-date. Trying to read.
+2017-02-18 16:12:35,435 [ModalContext] INFO  o.e.m.c.i.e.AbstractTransferListenerAdapter - Downloading https://repo.maven.apache.org/maven2/org/apache/maven/archetypes/maven-archetype-archetype/1.0/maven-archetype-archetype-1.0.jar
+2017-02-18 16:12:35,483 [ModalContext] INFO  o.e.m.c.i.e.AbstractTransferListenerAdapter - Downloaded https://repo.maven.apache.org/maven2/org/apache/maven/archetypes/maven-archetype-archetype/1.0/maven-archetype-archetype-1.0.jar
+2017-02-18 16:12:35,513 [ModalContext] INFO  o.e.m.c.i.e.AbstractTransferListenerAdapter - Downloading https://repo.maven.apache.org/maven2/org/apache/maven/archetypes/maven-archetype-archetype/1.0/maven-archetype-archetype-1.0.pom
+2017-02-18 16:12:35,550 [ModalContext] INFO  o.e.m.c.i.e.AbstractTransferListenerAdapter - Downloaded https://repo.maven.apache.org/maven2/org/apache/maven/archetypes/maven-archetype-archetype/1.0/maven-archetype-archetype-1.0.pom
