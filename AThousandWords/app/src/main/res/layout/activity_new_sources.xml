@@ -11,11 +11,11 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="pictures.newsin.athousandwords.NewSourcesActivity"
     android:isScrollContainer="false">
-    <ListView
+    <com.woxthebox.draglistview.DragListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/sources_list"
-        android:descendantFocusability="blocksDescendants"/>
+        android:id="@+id/sources_list"/>
+        <!--android:descendantFocusability="blocksDescendants"-->
 
 
     <ImageButton

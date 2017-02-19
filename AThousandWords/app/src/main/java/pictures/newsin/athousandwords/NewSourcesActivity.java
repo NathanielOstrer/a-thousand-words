@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.database.DataSetObserver;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,13 +16,16 @@ import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.woxthebox.draglistview.DragItemAdapter;
+import com.woxthebox.draglistview.DragListView;
+
 import java.util.Arrays;
 
 public class NewSourcesActivity extends AppCompatActivity
         implements View.OnClickListener, AdapterView.OnItemClickListener {
 
-    private ListView listView;
-    private ArrayAdapter<String> adapter;
+    private DragListView listView;
+    private DragItemAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,9 +36,10 @@ public class NewSourcesActivity extends AppCompatActivity
     }
 
     public void buildList() {
-        listView = (ListView) findViewById(R.id.sources_list);
-        adapter = new ArrayAdapter<>(this, R.layout.sourcelist, HomepageActivity.newsList);
-        listView.setAdapter(adapter);
+        listView = (DragListView) findViewById(R.id.sources_list);
+        listView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new ItemArrayAdapter
+        listView.setAdapter(adapter, false);
         listView.setOnItemClickListener(this);
     }
 
@@ -62,6 +67,7 @@ public class NewSourcesActivity extends AppCompatActivity
             public void onClick(DialogInterface dialog, int which) {
                 String news = (String)arrayAdapter.getItem(which);
                 HomepageActivity.newsList.add(news);
+                HomepageActivity.saveNewsList(NewSourcesActivity.this);
                 adapter.notifyDataSetChanged();
             }
         });
@@ -89,6 +95,7 @@ public class NewSourcesActivity extends AppCompatActivity
             @Override
             public void onClick(DialogInterface dialog,int which) {
                 HomepageActivity.newsList.remove(position);
+                HomepageActivity.saveNewsList(NewSourcesActivity.this);
                 adapter.notifyDataSetChanged();
             }
         });

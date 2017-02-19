@@ -35,13 +35,20 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -49,8 +56,12 @@ import java.util.List;
  */
 public class HomepageActivity extends AppCompatActivity implements View.OnLongClickListener {
 
+    public static Map<String, Bitmap> imageCache = new HashMap<>();
+
+    public static String NEWSORDER_FILENAME = "newsorder";
+
     public static List<String> newsList;
-    public static HashMap<String, String> newsKeys = new HashMap<>();
+    public static Map<String, String> newsKeys = new HashMap<>();
     static{
         newsKeys.put("The New York Times", "the-new-york-times");
         newsKeys.put("CNN", "cnn");
@@ -101,6 +112,21 @@ public class HomepageActivity extends AppCompatActivity implements View.OnLongCl
     public ImageButton activePressed = null;
     public int imageState = 0;
 
+
+    public static void saveNewsList(Activity activity) {
+        FileOutputStream fos = null;
+        try {
+            fos = activity.openFileOutput(NEWSORDER_FILENAME, MODE_PRIVATE);
+            PrintWriter pw = new PrintWriter(fos);
+            for(String news : newsList) {
+                pw.println(news);
+            }
+            pw.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,8 +136,17 @@ public class HomepageActivity extends AppCompatActivity implements View.OnLongCl
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_homepage);
 
-        newsList = new ArrayList<String>();
-        newsList.addAll(newsKeys.keySet());
+        newsList = new ArrayList<>();
+        try {
+            FileInputStream fis = openFileInput(NEWSORDER_FILENAME);
+            Scanner s = new Scanner(fis);
+            while(s.hasNext()) {
+                newsList.add(s.nextLine());
+            }
+            s.close();
+        }catch(FileNotFoundException e) {
+            newsList.addAll(newsKeys.keySet());
+        }
 
         //createProgressBarLayout();
         // PULL THE NEWSIN.PICTURES CONTENT
@@ -274,20 +309,37 @@ public class HomepageActivity extends AppCompatActivity implements View.OnLongCl
 
             JSONParser parser = new JSONParser();
             JSONObject result = parser.getJSONFromUrl("https://thousand-words.appspot.com/getnews.json");
-            List<NewsLoad> articles = new ArrayList<NewsLoad>();
+            List<NewsLoad> articles = new ArrayList<>();
+            List<String> cacheKeys = new ArrayList<>(imageCache.keySet());
             for (String source : newsList) {
                 try {
                     String key = newsKeys.get(source);
                     JSONObject article = result.getJSONObject(key);
                     NewsStructure structure = new NewsStructure(article);
-                    Bitmap image = getBitmapFromURL(structure.image);
-                    Bitmap icon = getBitmapFromURL(structure.icon);
+
+                    Bitmap image = imageCache.get(structure.image);
+                    cacheKeys.remove(structure.image);
+                    if(image == null) {
+                        image = getBitmapFromURL(structure.image);
+                        imageCache.put(structure.image, image);
+                    }
+
+                    Bitmap icon = imageCache.get(structure.icon);
+                    cacheKeys.remove(structure.icon);
+                    if(icon == null) {
+                        icon = getBitmapFromURL(structure.icon);
+                        imageCache.put(structure.icon, icon);
+                    }
 
                     articles.add(new NewsLoad(structure, image, icon));
                 }catch(JSONException e) {
                     e.printStackTrace();
                 }
             }
+            for(String key : cacheKeys) {
+                imageCache.remove(key);
+            }
+
             return articles;
         }
 
