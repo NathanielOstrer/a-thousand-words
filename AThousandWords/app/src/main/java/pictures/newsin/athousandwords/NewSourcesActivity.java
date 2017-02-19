@@ -98,9 +98,6 @@ public class NewSourcesActivity extends AppCompatActivity
 
 
     public void addSource(View v) {
-        AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
-//        builderSingle.setIcon(R.drawable.ic_launcher);
-        builderSingle.setTitle("Select a Source to Add:-");
 
         final Object[] sourceList = HomepageActivity.newsKeys.keySet().toArray();
         Arrays.sort(sourceList);
@@ -121,7 +118,7 @@ public class NewSourcesActivity extends AppCompatActivity
                 android.R.layout.select_dialog_singlechoice, sourceList);
 
         AlertDialog dialog = new AlertDialog.Builder(this)
-        .setTitle("Select a Source to Add:")
+        .setTitle("Select Sources:")
         .setMultiChoiceItems(choices, selectedItems, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int indexSelected, boolean isChecked) {

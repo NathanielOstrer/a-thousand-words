@@ -311,7 +311,6 @@ public class HomepageActivity extends AppCompatActivity implements View.OnLongCl
             JSONParser parser = new JSONParser();
             JSONObject result = parser.getJSONFromUrl("https://thousand-words.appspot.com/getnews.json");
             if(result == null) {
-                Toast.makeText(activity, "Error: No Internet", Toast.LENGTH_SHORT).show();
                 return null;
             }
             List<NewsLoad> articles = new ArrayList<>();
@@ -350,7 +349,10 @@ public class HomepageActivity extends AppCompatActivity implements View.OnLongCl
 
 
         protected void onPostExecute(List<NewsLoad> articles) {
-            if(articles == null) return;
+            if(articles == null) {
+                Toast.makeText(activity, "Error: No Internet", Toast.LENGTH_SHORT).show();
+                return;
+            }
             DisplayMetrics metrics = new DisplayMetrics();
             activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
             LinearLayout imageView = (LinearLayout) activity.findViewById(R.id.images_layer);
