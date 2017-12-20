@@ -10,5 +10,5 @@ If you try clicking on key word, it will take you to example images for that key
 
 
 Credit:
-<a href="github.com/CalLavicka"> Cal Lavicka </a>
-<a href="github.com/higgs241"> Nathaniel Ostrer </a>
+<a href="https://www.github.com/CalLavicka"> Cal Lavicka </a>
+<a href="https://www.github.com/higgs241"> Nathaniel Ostrer </a>
